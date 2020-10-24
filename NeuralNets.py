@@ -3,10 +3,10 @@ import numpy as np
 
 class Perceptron:
     def __init__(self):
-        self.weights_h = np.random.rand(784, 5)
-        self.weights_o = np.random.rand(5, 1)
-        self.bias_h = np.random.rand(2, 1)
-        self.bias_o = np.random.rand(1, 1)
+        self.weights_h = np.random.uniform(low=-1, high=1, size=(784, 2))
+        self.weights_o = np.random.uniform(low=-1, high=1, size=(2, 1))
+        self.bias_h = np.random.uniform(low=-1, high=1, size=(2,))
+        self.bias_o = np.random.uniform(low=-1, high=1, size=(1,))
         self.alpha = 0.5
         self.epochs = 1
 
@@ -20,7 +20,7 @@ class Perceptron:
                 delta_output = raw_error * output * (1 - output)
                 # backprop error to hidden layer
                 input_layer = x[1:]
-                hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer))  # generate hidden layer
+                hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer) + self.bias_h)  # generate hidden layer
                 delta_hidden = np.multiply(np.multiply(hidden_layer, np.subtract(1, hidden_layer)), np.dot(self.weights_o, delta_output))
                 # update output and internal weights
                 for i in range(len(self.weights_o)):
@@ -28,13 +28,13 @@ class Perceptron:
                 for row in range(len(self.weights_h)):
                     for col in range(len(self.weights_h[row])):
                         self.weights_h[row, col] = self.weights_h[row, col] + self.alpha * input_layer[row] * delta_hidden[col]
-                # update bias weights
+                # update bias weights - TODO
 
     def forward_prop(self, x):
         # x is 1x785 flat image with class label at index 0 (original 28x28 image)
         input_layer = x[1:]
-        hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer))  # + self.bias_h)
-        output = self.activate_layer(np.dot(self.weights_o.transpose(), hidden_layer))  # + self.bias_o)
+        hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer) + self.bias_h)
+        output = self.activate_layer(np.dot(self.weights_o.transpose(), hidden_layer) + self.bias_o)
         return output
 
     def activate_layer(self, layer):
@@ -55,13 +55,18 @@ class Perceptron:
 
 
 def train_perceptron():
-    data = np.genfromtxt('data/mnist_train_0_1.csv', delimiter=',')
-    y = data[:, 0:1]
-    data = np.divide(data[:, 1:], 255)
-    data = np.c_[y, data]
+    train_data = np.genfromtxt('data/mnist_train_0_1.csv', delimiter=',')
+    y = train_data[:, 0:1]
+    train_data = np.divide(train_data[:, 1:], 255)
+    train_data = np.c_[y, train_data]
     nn = Perceptron()
-    nn.train(data)
-    print(nn.accuracy(data))
+    nn.train(train_data)
+
+    test_data = np.genfromtxt('data/mnist_test_0_1.csv', delimiter=',')
+    y = test_data[:, 0:1]
+    test_data = np.divide(test_data[:, 1:], 255)
+    test_data = np.c_[y, test_data]
+    print(nn.accuracy(test_data))
 
 
 train_perceptron()
