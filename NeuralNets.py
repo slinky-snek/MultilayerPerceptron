@@ -3,6 +3,7 @@ import numpy as np
 
 class Perceptron:
     def __init__(self):
+        np.random.seed(10)
         self.weights_h = np.random.uniform(low=-1, high=1, size=(784, 2))
         self.weights_o = np.random.uniform(low=-1, high=1, size=(2, 1))
         self.bias_h = np.random.uniform(low=-1, high=1, size=(2,))
@@ -28,7 +29,10 @@ class Perceptron:
                 for row in range(len(self.weights_h)):
                     for col in range(len(self.weights_h[row])):
                         self.weights_h[row, col] = self.weights_h[row, col] + self.alpha * input_layer[row] * delta_hidden[col]
-                # update bias weights - TODO
+                # update bias weights
+                self.bias_o[0] = self.bias_o[0] + self.alpha * delta_output
+                for row in range(len(self.bias_h)):
+                    self.bias_h[row] = self.bias_h[row] + self.alpha * delta_hidden[row]
 
     def forward_prop(self, x):
         # x is 1x785 flat image with class label at index 0 (original 28x28 image)
@@ -54,7 +58,7 @@ class Perceptron:
         return correct/len(data)
 
 
-def train_perceptron():
+def test_perceptron():
     train_data = np.genfromtxt('data/mnist_train_0_1.csv', delimiter=',')
     y = train_data[:, 0:1]
     train_data = np.divide(train_data[:, 1:], 255)
@@ -69,4 +73,4 @@ def train_perceptron():
     print(nn.accuracy(test_data))
 
 
-train_perceptron()
+test_perceptron()
