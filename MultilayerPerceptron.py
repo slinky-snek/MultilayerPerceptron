@@ -1,3 +1,6 @@
+# Aaron Barnett
+# acba242@uky.edu
+
 import numpy as np
 
 
@@ -21,7 +24,7 @@ class Perceptron:
                 delta_output = raw_error * output * (1 - output)
                 # backprop error to hidden layer
                 input_layer = x[1:]
-                hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer) + self.bias_h)  # generate hidden layer
+                hidden_layer = self.activate_layer(np.dot(self.weights_h.transpose(), input_layer) + self.bias_h)
                 delta_hidden = np.multiply(np.multiply(hidden_layer, np.subtract(1, hidden_layer)), np.dot(self.weights_o, delta_output))
                 # update output and internal weights
                 for i in range(len(self.weights_o)):
